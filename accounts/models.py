@@ -1,10 +1,17 @@
-from pyexpat import model
+
 from django.db import models
 
 class Customer(models.Model):
     name=models.CharField(max_length=200,null=True)
     phone=models.CharField(max_length=200,null=True)
     email=models.CharField(max_length=200,null=True)
+    # Cart details 
+    country=models.CharField(max_length=100,null=True)
+    street = models.CharField(max_length=200,null=True)
+    state = models.CharField(max_length=100,null=True) 
+    zipcode=models.FloatField(null=True)
+    cartNumber = models.CharField(max_length=100,null=True)
+    
     date_created_on=models.DateTimeField(auto_now_add=True,null=True)
 
     def __str__(self):
@@ -20,8 +27,12 @@ class Tag(models.Model):
 class Product(models.Model):
 
     CATEGORY=(
-    ('Out door','Out door'),
-    ('Indoor','Indoor'), 
+    ('Instruments','Instruments'),
+    ('Strings','Strings'),
+    ('Percussion','Percussion'),
+    ('Wind','Wind'),
+    ('Keyboards','Keyboards'),
+    ('Brass','Brass') 
     )
 
     name=models.CharField(max_length=200,null=True)
@@ -45,7 +56,7 @@ class Order(models.Model):
     ('Returned','Returned')
     )
 
-
+    
     customer=models.ForeignKey(Customer,null=True,on_delete=models.SET_NULL) 
     product=models.ForeignKey(Product,null=True,on_delete=models.SET_NULL)
     date_created_on=models.DateTimeField(auto_now_add=True,null=True)
