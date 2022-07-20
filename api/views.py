@@ -1,8 +1,10 @@
-from api.serializers import OrderSerializer,ProductSerializer
+from api.serializers import OrderSerializer,ProductSerializer,CustomerSerializer,RegisteredUsersSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from accounts.models import Order,Product
-from api import serializers
+from accounts.models import Customer, Order,Product
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+
 
 @api_view(['GET'])
 def getCart(request):
@@ -62,3 +64,43 @@ def getProducts(request):
     products=Product.objects.all()
     serializer = ProductSerializer(products,many=True)
     return Response(serializer.data)
+
+@api_view(['POST'])
+def placeOrder(request):
+    data =  request.data
+    order = Customer.objects.create(
+        name=data['name'],
+        phone=data['phone'],
+        email=data['email'],
+        country=data['country'],
+        street=data['street'],
+        state=data['state'],
+        zipcode=data['zipcode'],
+        cartnumber=data['cartnumber']
+    )
+    serializer =  CustomerSerializer(order, many=False)
+    return Response(serializer.data)
+
+ # Get user 
+@api_view(['GET'])
+def getUser(request):
+    routes = [
+        "/api/token",
+        "/api/token/refresh"
+    ]
+    return Response(routes)
+  
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # Add custom claims
+        token['username'] = user.username
+        token['password']= user.password
+
+        return token
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer

@@ -39,6 +39,7 @@ class Product(models.Model):
     price=models.FloatField(null=True)
     category=models.CharField(max_length=200,null=True,choices=CATEGORY)
     description=models.TextField(null=True,blank=True)
+    image_url = models.TextField(null=True)
     date_created_on=models.DateTimeField(auto_now_add=True,null=True)
     tags=models.ManyToManyField(Tag)
 
