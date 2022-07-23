@@ -1,9 +1,10 @@
-from api.serializers import OrderSerializer,ProductSerializer,CustomerSerializer,RegisteredUsersSerializer
+from api.serializers import OrderSerializer,ProductSerializer,CustomerSerializer,UserSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from accounts.models import Customer, Order,Product
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+from django.contrib.auth.models import User
 
 
 @api_view(['GET'])
@@ -65,21 +66,29 @@ def getProducts(request):
     serializer = ProductSerializer(products,many=True)
     return Response(serializer.data)
 
+
+@api_view(['GET'])
+def getCustomers(request):
+    customer=Customer.objects.all()
+    serializer = CustomerSerializer(customer,many=True)
+    return Response(serializer.data)
+
 @api_view(['POST'])
 def placeOrder(request):
-    data =  request.data
-    order = Customer.objects.create(
-        name=data['name'],
-        phone=data['phone'],
-        email=data['email'],
-        country=data['country'],
-        street=data['street'],
-        state=data['state'],
-        zipcode=data['zipcode'],
-        cartnumber=data['cartnumber']
-    )
-    serializer =  CustomerSerializer(order, many=False)
-    return Response(serializer.data)
+    serializer = OrderSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors)
+
+
+@api_view(['POST'])
+def setCustomer(request):
+    serializer = CustomerSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors)
 
  # Get user 
 @api_view(['GET'])
@@ -104,3 +113,15 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
+
+
+
+@api_view(['POST'])
+def registerUser(request):
+    serializer=UserSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors)
+    
+
