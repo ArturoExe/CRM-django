@@ -79,3 +79,7 @@ def deleteOrder(request,pk):
     context = {'item':order}
     return render(request,'accounts/delete.html',context)
 
+
+# def addProduct(request):
+   
+#     return render(request,'accounts/delete.html',context)
